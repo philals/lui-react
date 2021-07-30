@@ -1,37 +1,36 @@
 // src/mocks/handlers.js
-import { rest } from "msw";
+import {rest} from "msw";
 
 export const handlers = [
-  rest.post("/login", (req, res, ctx) => {
-    // Persist user's authentication in the session
-    sessionStorage.setItem("is-authenticated", "true");
+    rest.get("/auth/api/userinfo", (req, res, ctx) => {
+            return res(
+                ctx.status(200),
+                ctx.json(
+                    {
+                        "user": {
+                            "id": "cpa",
+                            "idHash": "1_testRegisteredUser_2",
+                            "email": "testReg@linz.govt.nz",
+                            "givenNames": "Max",
+                            "surname": "Doesburg",
+                            "loginType": "EXTERNAL",
+                            "preferredName": "Max",
+                            "firms": [{
+                                "name": "FirmL",
+                                "id": "firml",
+                                "privileges": ["prv_sign_tin"]
+                            }, {"name": "Cheese Inc", "id": "cheese-inc", "privileges": []}, {
+                                "name": "Apple Inc",
+                                "id": "apple-inc",
+                                "privileges": []
+                            }],
+                            "passwordChangeRequired": false,
+                            "roles": ["TTLS"]
+                        }
+                    }
+                )
+            );
+        }
+    )
+]
 
-    return res(
-      // Respond with a 200 status code
-      ctx.status(200)
-    );
-  }),
-
-  rest.get("/user", (req, res, ctx) => {
-    // Check if the user is authenticated in this session
-    const isAuthenticated = sessionStorage.getItem("is-authenticated");
-
-    if (!isAuthenticated) {
-      // If not authenticated, respond with a 403 error
-      return res(
-        ctx.status(403),
-        ctx.json({
-          errorMessage: "Not authorized"
-        })
-      );
-    }
-
-    // If authenticated, return a mocked user details
-    return res(
-      ctx.status(200),
-      ctx.json({
-        username: "admin"
-      })
-    );
-  })
-];
